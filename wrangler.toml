@@ -11,7 +11,7 @@ binding = "ASSETS"
 [[d1_databases]]
 binding = "DB"
 database_name = "asbl-las-staging"
-database_id = "REPLACE_WITH_STAGING_DATABASE_ID"
+database_id = "00000000-0000-4000-8000-000000000001"
 migrations_dir = "migrations"
 
 [vars]
@@ -25,5 +25,5 @@ vars = { APP_ENV = "production", DEMO_MODE = "false" }
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "asbl-las-production"
-database_id = "REPLACE_WITH_PRODUCTION_DATABASE_ID"
+database_id = "00000000-0000-4000-8000-000000000002"
 migrations_dir = "migrations"
