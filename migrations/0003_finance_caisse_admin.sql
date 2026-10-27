@@ -15,5 +15,4 @@ CREATE TABLE IF NOT EXISTS CashMovement (
 CREATE INDEX IF NOT EXISTS idx_cash_movement_date ON CashMovement(movementDate, currency);
 CREATE INDEX IF NOT EXISTS idx_cash_movement_member ON CashMovement(memberId, movementDate);
 -- Status values are preserved as written in the original register.
-ALTER TABLE Member ADD COLUMN cotisationStatus TEXT;
 ALTER TABLE Member ADD COLUMN tontineStatus TEXT;
