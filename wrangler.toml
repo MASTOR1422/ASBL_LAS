@@ -3,6 +3,10 @@ main = ".open-next/worker.js"
 compatibility_date = "2026-10-01"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = true
+upload_source_maps = true
+
+[observability]
+enabled = true
 
 [assets]
 directory = ".open-next/assets"
@@ -13,6 +17,10 @@ binding = "DB"
 database_name = "asbl-las-staging"
 database_id = "00000000-0000-4000-8000-000000000001"
 migrations_dir = "migrations"
+
+[[services]]
+binding = "WORKER_SELF_REFERENCE"
+service = "asbl-las"
 
 [vars]
 APP_ENV = "staging"
@@ -27,3 +35,7 @@ binding = "DB"
 database_name = "asbl-las-production"
 database_id = "00000000-0000-4000-8000-000000000002"
 migrations_dir = "migrations"
+
+[[env.production.services]]
+binding = "WORKER_SELF_REFERENCE"
+service = "asbl-las-production"
