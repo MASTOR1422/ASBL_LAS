@@ -1,7 +1,6 @@
 import { NextRequest,NextResponse } from "next/server";
 import { getDB } from "@/lib/cloudflare";
 import { issueSession } from "@/lib/session";
-export const runtime="edge";
 async function verifyPassword(password:string,stored:string):Promise<boolean>{
  const p=stored.split("$");if(p.length!==4||p[0]!=="pbkdf2")return false;
  const iterations=Number(p[1]);if(!Number.isInteger(iterations)||iterations<100000||iterations>600000)return false;
