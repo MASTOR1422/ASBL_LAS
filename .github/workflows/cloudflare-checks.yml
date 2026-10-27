@@ -1,4 +1,7 @@
 name: Cloudflare readiness checks
+concurrency:
+  group: cloudflare-checks-${{ github.ref }}
+  cancel-in-progress: true
 on:
   pull_request:
   push:
