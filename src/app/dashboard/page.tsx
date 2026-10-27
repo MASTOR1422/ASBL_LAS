@@ -1,7 +1,7 @@
 "use client";
 import {useEffect,useState} from "react";
 type User={id:string;username:string;displayName:string;role:string;memberId:string|null};
-const modules=["Statistiques","Membres","Cotisations","Tontine","Caisse","Entraide","Médiathèque","Utilisateurs","Journal audit"];
+const modules=["Statistiques","Membres","Cotisations","Tontine","Caisse","Entraide","Médiathèque","Utilisateurs","Journal d'audit"];
 const endpoints:Record<string,string>={"Statistiques":"/api/stats","Membres":"/api/members","Cotisations":"/api/finance","Tontine":"/api/tontine","Caisse":"/api/caisse","Entraide":"/api/aid-requests","Médiathèque":"/api/media","Utilisateurs":"/api/users","Journal d'audit":"/api/audit"};
 export default function Dashboard(){
  const [user,setUser]=useState<User|null>(null),[module,setModule]=useState(modules[0]),[data,setData]=useState<any>(null),[error,setError]=useState(""),[busy,setBusy]=useState(false);
