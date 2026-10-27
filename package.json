@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "db:local:migrate": "wrangler d1 execute asbl-las-staging --local --file=migrations/0001_initial.sql",
+    "db:local:migrate": "wrangler d1 migrations apply asbl-las-staging --local",
     "db:local:seed": "node scripts/seed-demo.mjs",
     "build:cf": "opennextjs-cloudflare build",
     "preview:cf": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
