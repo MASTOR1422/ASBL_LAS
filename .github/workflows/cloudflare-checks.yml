@@ -18,6 +18,10 @@ jobs:
         with:
           node-version: 22
       - run: bun install
+      - name: Apply schema to local D1 only
+        run: bun run db:local:migrate
+      - name: Seed synthetic data into local D1 only
+        run: bun run db:local:seed
       - run: bun run build:cf
       - run: bun run lint
       - run: bun run typecheck
