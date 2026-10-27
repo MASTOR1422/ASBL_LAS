@@ -15,7 +15,7 @@ Node.js 22+, Bun, un compte Cloudflare et Wrangler authentifié. Ne lancez aucun
 ## Démarrage local
 1. Installer : bun install
 2. Copier .dev.vars.example vers .dev.vars et définir SESSION_SECRET avec au moins 32 caractères aléatoires.
-3. Créer le schéma local : bunx wrangler d1 execute asbl-las-staging --local --file=migrations/0001_initial.sql
+3. Créer le schéma local : bun run db:local:migrate
 4. Ajouter les exemples : bun run db:local:seed
 5. Lancer : bun run dev
 6. Vérifier /api/health.
@@ -26,7 +26,7 @@ Comptes locaux de démonstration : admin/admin123, secretaire/secretaire123, tre
 1. Créer deux bases D1 distinctes : staging et production.
 2. Remplacer les IDs factices REPLACE_WITH_STAGING_DATABASE_ID et REPLACE_WITH_PRODUCTION_DATABASE_ID dans une configuration locale. Ne pas committer des IDs de production si cela contrevient à votre politique.
 3. Définir SESSION_SECRET dans les secrets Worker (minimum 32 caractères aléatoires), jamais dans wrangler.toml.
-4. Appliquer le schéma à staging seulement après vérification : bunx wrangler d1 execute asbl-las-staging --remote --file=migrations/0001_initial.sql.
+4. Appliquer le schéma à staging seulement après vérification : bunx wrangler d1 migrations apply asbl-las-staging --remote.
 5. Tester /api/health, connexion, rôles, annuaire, cotisations et annonces sur staging.
 6. Déployer le code : bun run deploy:cf.
 7. Migrer la production uniquement après sauvegarde et validation écrite.
