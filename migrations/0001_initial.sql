@@ -14,3 +14,6 @@ CREATE INDEX IF NOT EXISTS idx_member_name ON Member(name);
 CREATE INDEX IF NOT EXISTS idx_contribution_year_month ON MonthlyContribution(contributionYear, contributionMonth);
 CREATE INDEX IF NOT EXISTS idx_post_status_created ON Post(status, createdAt);
 CREATE INDEX IF NOT EXISTS idx_aid_status_created ON AidRequest(status, createdAt);
+
+CREATE TABLE IF NOT EXISTS LoginAttempt (id TEXT PRIMARY KEY, username TEXT NOT NULL, ip TEXT NOT NULL, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE INDEX IF NOT EXISTS idx_login_attempt_user_ip_time ON LoginAttempt(username,ip,createdAt);
