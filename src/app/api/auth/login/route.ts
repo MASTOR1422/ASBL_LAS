@@ -14,6 +14,7 @@ export async function POST(req:NextRequest){
   const d=await req.json() as {username?:string;password?:string};const username=String(d.username??"").trim().toLowerCase(),password=String(d.password??"");
   if(!username||!password||username.length>80||password.length>200)return NextResponse.json({error:"Identifiant et mot de passe requis."},{status:400});
   const db=getDB(),ip=(req.headers.get("cf-connecting-ip")??"unknown").slice(0,80);
+  await db.prepare("DELETE FROM LoginAttempt WHERE createdAt < datetime('now','-1 day')").run();
   const attempts=await db.prepare("SELECT COUNT(*) AS n FROM LoginAttempt WHERE username=? AND ip=? AND createdAt >= datetime('now','-15 minutes')").bind(username,ip).first<{n:number}>();
   if((attempts?.n??0)>=8)return NextResponse.json({error:"Trop de tentatives. Réessayez dans 15 minutes."},{status:429,headers:{"Retry-After":"900"}});
   const u=await db.prepare("SELECT id,username,displayName,role,active,memberId,passwordHash FROM User WHERE username=?").bind(username).first<any>();
