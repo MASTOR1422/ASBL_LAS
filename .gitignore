@@ -52,3 +52,15 @@ prompt
 server.log
 # Skills directory
 /skills/
+# Cloudflare / local secrets
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.wrangler/
+.open-next/
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite3
+*.db

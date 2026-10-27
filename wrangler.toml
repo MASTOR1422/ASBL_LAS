@@ -1,0 +1,41 @@
+name = "asbl-las"
+main = ".open-next/worker.js"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+upload_source_maps = true
+
+[observability]
+enabled = true
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "asbl-las-staging"
+database_id = "00000000-0000-4000-8000-000000000001"
+migrations_dir = "migrations"
+
+[[services]]
+binding = "WORKER_SELF_REFERENCE"
+service = "asbl-las"
+
+[vars]
+APP_ENV = "staging"
+DEMO_MODE = "true"
+
+[env.production]
+name = "asbl-las-production"
+vars = { APP_ENV = "production", DEMO_MODE = "false" }
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "asbl_las_db"
+database_id = "d5f75f78-57e4-4b1a-8999-64c7d5bcf3f2"
+migrations_dir = "migrations"
+
+[[env.production.services]]
+binding = "WORKER_SELF_REFERENCE"
+service = "asbl-las-production"
