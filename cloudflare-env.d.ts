@@ -10,7 +10,7 @@ interface D1Database {
 interface Fetcher {
   fetch(request: Request | string, init?: RequestInit): Promise<Response>;
 }
-interface Env {
+interface CloudflareEnv {
   DB: D1Database;
   ASSETS: Fetcher;
   SESSION_SECRET: string;
