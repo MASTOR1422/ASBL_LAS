@@ -1,0 +1,171 @@
+// Schéma métier conservé comme référence Prisma. Les routes déployées utilisent le binding D1 directement.
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "sqlite"
+  url = env("DATABASE_URL")
+}
+model User {
+  id String @id @default(cuid())
+  username String @unique
+  email String?
+  passwordHash String
+  displayName String
+  role String @default("MEMBRE")
+  active Boolean @default(true)
+  memberId String? @unique
+  lastLoginAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  member Member? @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  posts Post[] @relation("PostAuthor")
+  comments PostComment[] @relation("CommentAuthor")
+  mediaItems MediaItem[] @relation("MediaAuthor")
+  auditLogs AuditLog[] @relation("AuditActor")
+}
+model Member {
+  id String @id @default(cuid())
+  memberNumber String @unique
+  name String
+  phone String?
+  email String?
+  address String?
+  note String?
+  birthdate String?
+  birthplace String?
+  profession String?
+  position String?
+  joinedOn String?
+  asblStatus String?
+  forumStatus String?
+  meetingStatus String?
+  photoUrl String?
+  birthdayVisible Boolean @default(true)
+  status String @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User?
+  contributions MonthlyContribution[]
+  payments MemberPayment[]
+  tontineEntries TontineEntry[]
+  aidRequests AidRequest[]
+}
+model MonthlyContribution {
+  id String @id @default(cuid())
+  memberId String
+  contributionYear Int
+  contributionMonth Int
+  amount Float
+  currency String @default("CDF")
+  note String?
+  paidAt DateTime?
+  recordedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  @@unique([memberId, contributionYear, contributionMonth])
+}
+model MemberPayment {
+  id String @id @default(cuid())
+  memberId String
+  paymentYear Int
+  paymentMonth Int
+  paid Boolean @default(false)
+  updatedBy String?
+  updatedAt DateTime @updatedAt
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  @@unique([memberId, paymentYear, paymentMonth])
+}
+model TontinePeriod {
+  id String @id @default(cuid())
+  title String
+  startsOn String
+  endsOn String
+  contributionAmount Float
+  currency String @default("CDF")
+  status String @default("open")
+  createdById String?
+  createdAt DateTime @default(now())
+  entries TontineEntry[]
+}
+model TontineEntry {
+  id String @id @default(cuid())
+  periodId String
+  memberId String
+  amount Float
+  currency String @default("CDF")
+  status String @default("due")
+  paidAt DateTime?
+  recordedBy String?
+  createdAt DateTime @default(now())
+  period TontinePeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  @@unique([periodId, memberId])
+}
+model AidRequest {
+  id String @id @default(cuid())
+  memberId String
+  subject String
+  description String
+  status String @default("submitted")
+  decisionNote String?
+  decidedBy String?
+  decidedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+}
+model Post {
+  id String @id @default(cuid())
+  authorId String
+  title String
+  body String
+  category String @default("annonce")
+  status String @default("published")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author User @relation("PostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  comments PostComment[]
+}
+model PostComment {
+  id String @id @default(cuid())
+  postId String
+  authorId String
+  body String
+  status String @default("published")
+  createdAt DateTime @default(now())
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User @relation("CommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+}
+model MediaItem {
+  id String @id @default(cuid())
+  authorId String
+  title String
+  description String?
+  mediaType String
+  dataUrl String?
+  externalUrl String?
+  isPublic Boolean @default(false)
+  status String @default("published")
+  createdAt DateTime @default(now())
+  author User @relation("MediaAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+}
+model AuditLog {
+  id String @id @default(cuid())
+  actorId String?
+  actorName String?
+  action String
+  entity String
+  entityId String?
+  details String?
+  createdAt DateTime @default(now())
+  actor User? @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+}
+model LoginAttempt {
+  id String @id
+  username String
+  ip String
+  createdAt DateTime @default(now())
+  @@index([username, ip, createdAt])
+}
