@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getDB } from "@/lib/cloudflare";
 export type LasUser = {id:string;username:string;displayName:string;role:string;memberId:string|null};
 const COOKIE="las_session", TTL=604800;
 function secret():string {
@@ -26,7 +27,9 @@ export async function getSession():Promise<LasUser|null>{
   let diff=0;for(let i=0;i<expected.length;i++)diff|=expected.charCodeAt(i)^parts[1].charCodeAt(i);if(diff!==0)return null;
   const p=JSON.parse(new TextDecoder().decode(decode(parts[0]))) as LasUser&{exp:number};
   if(!p.id||!p.exp||p.exp<Math.floor(Date.now()/1000))return null;
-  return {id:p.id,username:p.username,displayName:p.displayName,role:p.role,memberId:p.memberId??null};
+  const current=await getDB().prepare("SELECT id,username,displayName,role,active,memberId FROM User WHERE id=?").bind(p.id).first<any>();
+  if(!current||!current.active)return null;
+  return {id:current.id,username:current.username,displayName:current.displayName,role:current.role,memberId:current.memberId??null};
  }catch{return null;}
 }
 export function hasRole(user:LasUser|null,roles:string[]){return !!user&&roles.includes(user.role);}
