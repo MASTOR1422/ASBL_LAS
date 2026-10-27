@@ -14,8 +14,15 @@ export async function POST(req:NextRequest){
  try{
   const d=await req.json() as {username?:string;password?:string};const username=String(d.username??"").trim().toLowerCase(),password=String(d.password??"");
   if(!username||!password||username.length>80||password.length>200)return NextResponse.json({error:"Identifiant et mot de passe requis."},{status:400});
-  const db=getDB(),u=await db.prepare("SELECT id,username,displayName,role,active,memberId,passwordHash FROM User WHERE username=?").bind(username).first<any>();
-  if(!u||!u.active||!(await verifyPassword(password,u.passwordHash)))return NextResponse.json({error:"Identifiants incorrects ou compte désactivé."},{status:401});
+  const db=getDB(),ip=(req.headers.get("cf-connecting-ip")??"unknown").slice(0,80);
+  const attempts=await db.prepare("SELECT COUNT(*) AS n FROM LoginAttempt WHERE username=? AND ip=? AND createdAt >= datetime('now','-15 minutes')").bind(username,ip).first<{n:number}>();
+  if((attempts?.n??0)>=8)return NextResponse.json({error:"Trop de tentatives. Réessayez dans 15 minutes."},{status:429,headers:{"Retry-After":"900"}});
+  const u=await db.prepare("SELECT id,username,displayName,role,active,memberId,passwordHash FROM User WHERE username=?").bind(username).first<any>();
+  if(!u||!u.active||!(await verifyPassword(password,u.passwordHash))){
+   await db.prepare("INSERT INTO LoginAttempt(id,username,ip) VALUES(?,?,?)").bind(crypto.randomUUID(),username,ip).run();
+   return NextResponse.json({error:"Identifiants incorrects ou compte désactivé."},{status:401});
+  }
+  await db.prepare("DELETE FROM LoginAttempt WHERE username=? AND ip=?").bind(username,ip).run();
   await db.prepare("UPDATE User SET lastLoginAt=CURRENT_TIMESTAMP,updatedAt=CURRENT_TIMESTAMP WHERE id=?").bind(u.id).run();
   await issueSession({id:u.id,username:u.username,displayName:u.displayName,role:u.role,memberId:u.memberId??null});
   return NextResponse.json({ok:true,user:{id:u.id,username:u.username,displayName:u.displayName,role:u.role,memberId:u.memberId??null}});
