@@ -23,9 +23,9 @@ Node.js 22+, Bun, un compte Cloudflare et Wrangler authentifié. Ne lancez aucun
 Comptes locaux de démonstration : admin/admin123, secretaire/secretaire123, tresorier/tresorier123, membre/membre123. Ils ne doivent jamais être activés en production.
 
 ## Préparation Cloudflare
-1. Créer deux bases D1 distinctes : staging et production.
+1. Créer deux bases D1 distinctes : staging et production avec bunx wrangler d1 create asbl-las-staging et bunx wrangler d1 create asbl-las-production.
 2. Remplacer les IDs factices REPLACE_WITH_STAGING_DATABASE_ID et REPLACE_WITH_PRODUCTION_DATABASE_ID dans une configuration locale. Ne pas committer des IDs de production si cela contrevient à votre politique.
-3. Définir SESSION_SECRET dans les secrets Worker (minimum 32 caractères aléatoires), jamais dans wrangler.toml.
+3. Définir SESSION_SECRET dans les secrets Worker (minimum 32 caractères aléatoires), jamais dans wrangler.toml : bunx wrangler secret put SESSION_SECRET pour staging et bunx wrangler secret put SESSION_SECRET --env production pour production.
 4. Appliquer le schéma à staging seulement après vérification : bunx wrangler d1 migrations apply asbl-las-staging --remote.
 5. Tester /api/health, connexion, rôles, annuaire, cotisations et annonces sur staging.
 6. Déployer le code : bun run deploy:cf.
